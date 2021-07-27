@@ -1,42 +1,42 @@
 local HTTP = HTTP
 local SHA1 = util.SHA1
+local deleteFile = file.Delete
+local openFile = file.Open
+local renameFile = file.Rename
 local writeFile = file.Write
 local ErrorNoHalt = ErrorNoHalt
-local error = error
 module("webmat")
 
 function Download(uri)
-	local ext = uri:Right(4)
+	local str
 
-	if ext == ".jpg" or uri:Right(5) == ".jpeg" then
-		local str
+	if HTTP({
+		failed = ErrorNoHalt,
+		success = function(code, body)
+			str = SHA1(body)
+			local oldname = "webmats/" .. str .. ".dat"
+			writeFile(oldname, body)
+			local f = openFile(oldname, "rb", "DATA")
+			f:Skip(1)
+			local ispng = f:Read(3) == "PNG"
+			f:Skip(2)
+			local isjpg = f:Read(4) == "JFIF"
+			f:Close()
 
-		if HTTP({
-			failed = ErrorNoHalt,
-			success = function(code, body)
-				str = SHA1(body) .. ".jpg"
-				writeFile("webmats/" .. str, body)
-			end,
-			method = "GET",
-			url = uri
-		}) then
-			return str
-		end
-	elseif ext == ".png" then
-		local str
-
-		if HTTP({
-			failed = ErrorNoHalt,
-			success = function(code, body)
-				str = SHA1(body) .. ".png"
-				writeFile("webmats/" .. str, body)
-			end,
-			method = "GET",
-			url = uri
-		}) then
-			return str
-		end
-	else
-		error("Invalid URI entered for webmat.Download!")
+			if ispng then
+				str = str .. ".png"
+				renameFile(oldname, "webmats/" .. str)
+			elseif isjpg then
+				str = str .. ".jpg"
+				renameFile(oldname, "webmats/" .. str)
+			else
+				str = nil
+				deleteFile(oldname)
+			end
+		end,
+		method = "GET",
+		url = uri
+	}) then
+		return str
 	end
 end
