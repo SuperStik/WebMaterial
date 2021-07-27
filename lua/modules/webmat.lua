@@ -5,31 +5,35 @@ local ErrorNoHalt = ErrorNoHalt
 local error = error
 module("webmat")
 
-local function successjpeg(code, body)
-	writeFile("webmats/" .. SHA1(body) .. ".jpg", body)
-end
-
-local function successpng(code, body)
-	writeFile("webmats/" .. SHA1(body) .. ".png", body)
-end
-
 function Download(uri)
 	local ext = uri:Right(4)
 
 	if ext == ".jpg" or uri:Right(5) == ".jpeg" then
-		HTTP({
+		local str
+		if HTTP({
 			failed = ErrorNoHalt,
-			success = successjpeg,
+			success = funcion(code, body)
+				str = SHA1(body) .. ".jpg"
+				writeFile("webmats/" .. str, body)
+			end,
 			method = "GET",
 			url = uri
-		})
+		}) then
+			return str
+		end
 	elseif ext == ".png" then
-		HTTP({
+		local str
+		if HTTP({
 			failed = ErrorNoHalt,
-			success = successpng,
+			success = funcion(code, body)
+				str = SHA1(body) .. ".png"
+				writeFile("webmats/" .. str, body)
+			end,
 			method = "GET",
 			url = uri
-		})
+		}) then
+			return str
+		end
 	else
 		error("Invalid URI entered for webmat.Download!")
 	end
