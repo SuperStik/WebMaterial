@@ -11,7 +11,7 @@ AddCSLuaFile("modules/webmat.lua")
 include("modules/webmat.lua")
 
 function WebMaterial(uri, png)
-	Material("../data/" .. webmat.Download(uri), png)
+	Material("../data/webmats/" .. webmat.Download(uri), png)
 end
 
 hook.Add("ShutDown", "RemoveWebMats", function()
