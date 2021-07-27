@@ -10,9 +10,10 @@ function Download(uri)
 
 	if ext == ".jpg" or uri:Right(5) == ".jpeg" then
 		local str
+
 		if HTTP({
 			failed = ErrorNoHalt,
-			success = funcion(code, body)
+			success = function(code, body)
 				str = SHA1(body) .. ".jpg"
 				writeFile("webmats/" .. str, body)
 			end,
@@ -23,9 +24,10 @@ function Download(uri)
 		end
 	elseif ext == ".png" then
 		local str
+
 		if HTTP({
 			failed = ErrorNoHalt,
-			success = funcion(code, body)
+			success = function(code, body)
 				str = SHA1(body) .. ".png"
 				writeFile("webmats/" .. str, body)
 			end,
