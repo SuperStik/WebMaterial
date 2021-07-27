@@ -32,6 +32,7 @@ function Download(uri)
 			else
 				str = nil
 				deleteFile(oldname)
+				ErrorNoHalt("Invalid URI entered for webmat.Download!")
 			end
 		end,
 		method = "GET",
