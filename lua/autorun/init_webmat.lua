@@ -11,7 +11,13 @@ AddCSLuaFile("modules/webmat.lua")
 include("modules/webmat.lua")
 
 function WebMaterial(uri, png)
-	Material("../data/webmats/" .. webmat.Download(uri), png)
+	local str
+	-- I despise callbacks so much
+	webmat.Download(uri, function(img)
+		str = img
+	end)
+
+	if str ~= nil then return Material("../data/webmats/" .. str, png) end
 end
 
 hook.Add("ShutDown", "RemoveWebMats", function()
